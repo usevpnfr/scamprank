@@ -11,11 +11,10 @@
         --green:#27c93f;
         --white:#fff;
         --muted:#bfbfbf;
-        --value:#9aa0a6;          /* gray for values */
+        --value:#9aa0a6;
         --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       }
 
-      /* Page */
       html,body{height:100%}
       body{
         margin:0;
@@ -26,7 +25,6 @@
         -moz-osx-font-smoothing: grayscale;
       }
 
-      /* Centered narrow column – good on iPhone */
       .wrap{
         min-height:100%;
         box-sizing:border-box;
@@ -37,45 +35,61 @@
       }
       .card{
         width:100%;
-        max-width:520px;                 /* keeps everything readable */
+        max-width:520px;
         text-align:center;
       }
 
-      /* Headline stack */
+      /* NEW: Attention line (slightly smaller than title) */
+      .attention{
+        color:var(--red);
+        font-weight:800;
+        font-size:28px;          /* a bit smaller than title */
+        letter-spacing:0.04em;
+        text-transform:uppercase;
+        margin: 2px 0 8px;
+      }
+
+      /* Headline */
       .title{
         color:var(--red);
         font-weight:800;
-        font-size:32px;                  /* mobile size */
+        font-size:32px;          /* mobile size for iPhone */
         line-height:1.1;
         letter-spacing:0.04em;
-        margin: 8px 0 10px;
+        margin: 6px 0 8px;
         text-transform:uppercase;
       }
-      .warn{font-size:24px; margin:10px 0 18px}
+
+      /* NEW: small warning icons row (same size as old completed line) */
+      .warn{
+        font-size:18px;
+        margin:6px 0 14px;
+      }
 
       .message{
         color:var(--white);
         font-size:18px;
         line-height:1.3;
-        margin: 8px 0 14px;
-      }
-      .completed{
-        color:var(--green);
-        font-size:18px;
-        font-weight:700;
-        margin: 8px 0 10px;
+        margin: 4px 0 12px;
       }
 
-      /* Details grid: labels left, values right */
+      /* Smaller than before: just a bit bigger than details (14px) */
+      .completed{
+        color:var(--green);
+        font-size:16px;          /* details are 14px */
+        font-weight:700;
+        margin: 6px 0 10px;
+      }
+
       .details{
-        margin: 18px auto 0;
+        margin: 16px auto 0;
         text-align:left;
         border-top: 1px solid rgba(255,255,255,.06);
-        padding-top: 14px;
+        padding-top: 12px;
       }
       .row{
         display:grid;
-        grid-template-columns: 1fr auto;      /* label grows, value hugs right */
+        grid-template-columns: 1fr auto;
         gap: 12px;
         align-items:baseline;
         padding: 8px 0;
@@ -89,25 +103,24 @@
         color:var(--value);
         font-size:14px;
         text-align:right;
-        word-break: break-all;                 /* wrap long hashes/addresses */
+        word-break: break-all;
       }
 
-      /* Tiny fine print way below fold on phones */
       .disclaimer{
         font-size:12px;
         color:#999;
         text-align:center;
         line-height:1.4;
-        margin-top: 56vh;                      /* pushes below initial viewport */
+        margin-top: 56vh;
         padding: 0 8px;
       }
 
-      /* Larger screens get bigger type automatically */
       @media (min-width: 768px){
+        .attention{font-size:40px}
         .title{font-size:54px}
-        .warn{font-size:28px}
+        .warn{font-size:22px}
         .message{font-size:26px}
-        .completed{font-size:26px}
+        .completed{font-size:20px}
         .label,.value{font-size:16px}
         .disclaimer{margin-top: 420px}
       }
@@ -116,10 +129,13 @@
   <body>
     <div class="wrap">
       <div class="card">
-        <div class="title">⚠️YOUR CRYPTO WALLET HAS BEEN DRAINED!⚠️</div>
+        <!-- NEW attention line -->
+        <div class="attention">⚠️ ATTENTION! ⚠️</div>
 
-        <div class="message">Withdrawal Request Processing...</div>
+        <!-- Title without inline emojis -->
+        <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
 
+        <!-- Smaller completed line -->
         <div class="completed">✅ Withdrawal Completed [Finalized]</div>
 
         <!-- Details: labels left / values right -->
@@ -138,15 +154,14 @@
           </div>
           <div class="row">
             <div class="label">Destination:</div>
-            <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3 &#10697</div>
+            <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3C6e9D &#10697;</div>
           </div>
           <div class="row">
             <div class="label">Transaction Hash:</div>
-            <div class="value">0x9f4b2c1e6a7d8b3c4e5f1 &#10697</div>
+            <div class="value">0x9f4b2c1e6a7d8b3c4e5f1234567890a &#10697;</div>
           </div>
         </div>
 
-        <!-- fine-print, appears only after scrolling on phones -->
         <div class="disclaimer">
           This page is a simulated demonstration created for entertainment and promotional purposes only and does not represent a real security threat.
         </div>
