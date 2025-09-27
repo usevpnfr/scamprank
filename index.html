@@ -15,10 +15,10 @@
         --muted:#9aa0a6;
         --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 
-        /* spacing + overlay widths for the copyable rows */
-        --label-gap: 16px;   /* fixed distance after label where the ID starts */
-        --fade-width: 34px;  /* how much of the value is faded under the copy cell */
-        --copy-col: 22px;    /* width of the copy icon column */
+        /* copyable-row controls */
+        --label-gap:16px;     /* fixed space after label before ID starts */
+        --copy-col:22px;      /* icon width */
+        --fade-width:34px;    /* how far the fade intrudes from icon */
       }
 
       html,body{height:100%}
@@ -34,7 +34,7 @@
       .completed.processing{color:var(--yellow)}
       .completed.done{color:var(--green)}
 
-      /* spinner matches checkmark box size */
+      /* spinner exactly matches check SVG box */
       .spinner{width:22px;height:22px;box-sizing:border-box;border:2px solid var(--yellow);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
       @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -42,35 +42,43 @@
 
       .details{margin:16px auto 0;text-align:left;border-top:1px solid rgba(255,255,255,.06);padding-top:12px}
 
-      /* default rows untouched: label left, value right */
+      /* default rows (unchanged) */
       .row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:baseline;padding:8px 0}
       .label{color:var(--muted);font-size:14px;white-space:nowrap}
       .value{color:var(--white);font-size:14px;text-align:right;word-break:break-all}
 
-      /* ONLY for the two ID rows */
+      /* ONLY for Destination + Transaction Hash rows */
       .row.copyable{
-        grid-template-columns: auto var(--label-gap) 1fr var(--copy-col);
+        display:grid;
+        grid-template-columns:auto var(--label-gap) 1fr; /* label | fixed gap | value (full) */
         align-items:center;
+        position:relative; /* anchor fade & icon to row right edge */
       }
-      .row.copyable .label{ text-align:left }
+      .row.copyable .label{color:var(--muted);text-align:left}
       .row.copyable .value{
-        text-align:left; white-space:nowrap; overflow:hidden; text-overflow:clip; position:relative;
-        padding-right: calc(var(--fade-width)); /* keep text clear of the overlay */
+        text-align:left;
+        white-space:nowrap; overflow:hidden; text-overflow:clip;
+        padding-right: calc(var(--copy-col) + 8px); /* keep clear space for icon/fade */
       }
-      /* the fade+… is anchored to the copy cell, not the value */
+
+      /* copy icon pinned to absolute row-right */
       .row.copyable .copy{
-        position:relative; width:var(--copy-col); text-align:right; color:var(--muted); font-size:14px;
+        position:absolute; right:0; top:50%; transform:translateY(-50%);
+        width:var(--copy-col); text-align:right; color:var(--muted); font-size:14px;
       }
-      .row.copyable .copy::before{
+
+      /* fade + ellipsis anchored to the icon (never shifts) */
+      .row.copyable::after{
         content:"";
-        position:absolute; left: calc(-1 * var(--fade-width)); top:0; bottom:0; width: var(--fade-width);
-        background: linear-gradient(to right, rgba(0,0,0,0), var(--bg) 70%, var(--bg));
+        position:absolute; right:var(--copy-col); top:0; bottom:0; width:var(--fade-width);
+        background:linear-gradient(to right, rgba(0,0,0,0), var(--bg) 70%, var(--bg));
         pointer-events:none;
       }
-      .row.copyable .copy::after{
+      .row.copyable::before{
         content:"…";
-        position:absolute; left: calc(-1 * (var(--fade-width) - 16px)); top:50%; transform:translateY(-50%);
-        color: rgba(255,255,255,.75); font-size:14px; line-height:1; pointer-events:none;
+        position:absolute; right: calc(var(--copy-col) + 10px); top:50%;
+        transform:translateY(-50%);
+        color:rgba(255,255,255,.75); font-size:14px; line-height:1; pointer-events:none;
       }
 
       .disclaimer{font-size:12px;color:#999;text-align:center;line-height:1.4;margin-top:56vh;padding:0 8px}
@@ -92,7 +100,7 @@
         <div class="attention">⚠️ ATTENTION! ⚠️</div>
         <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
 
-        <!-- Status + process-time -->
+        <!-- status + process-time -->
         <div id="status" class="completed processing">
           <div class="spinner"></div>
           Withdrawal Processing...
@@ -113,7 +121,7 @@
             <div class="value">SOL</div>
           </div>
 
-          <!-- special layout ONLY here -->
+          <!-- ONLY these two rows get the special layout -->
           <div class="row copyable">
             <div class="label">Destination:</div>
             <div id="destVal" class="value"></div>
@@ -179,7 +187,7 @@
           Withdrawal Completed
         `;
         ptEl.textContent = `(Process time: ${display})`;
-      }, COMPLETE_MS);
+      }, 3000);
     </script>
   </body>
 </html>
