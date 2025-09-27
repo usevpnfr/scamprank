@@ -41,7 +41,7 @@
       .attention{
         color:var(--red);
         font-weight:800;
-        font-size:24px;
+        font-size:28px;
         margin: 2px 0 8px;
         text-transform:uppercase;
       }
@@ -49,7 +49,7 @@
       .title{
         color:var(--red);
         font-weight:800;
-        font-size:28px;
+        font-size:32px;
         line-height:1.1;
         margin: 6px 0 8px;
         text-transform:uppercase;
@@ -57,28 +57,36 @@
 
       .completed{
         font-size:16px;
-        margin: 12px 0 6px; /* tightened a bit to fit the small line below */
+        margin: 12px 0 6px;
         display:flex;
         align-items:center;
         justify-content:center;
         gap:8px;
-        font-weight:400; /* normal, not bold */
+        font-weight:400;
+        transition:color .3s ease, opacity .3s ease;
       }
-
       .completed.processing{
         color:var(--yellow);
       }
-
       .completed.done{
         color:var(--green);
       }
 
-      /* Estimated / actual process-time line:
-         same size as .label/.value (14px), but thinner weight */
+      /* Spinner */
+      .spinner {
+        width:16px;
+        height:16px;
+        border:2px solid var(--yellow);
+        border-top-color:transparent;
+        border-radius:50%;
+        animation:spin 1s linear infinite;
+      }
+      @keyframes spin {to{transform:rotate(360deg)}}
+
       .process-time{
         font-size:14px;
         color:var(--muted);
-        font-weight:300;            /* thinner */
+        font-weight:300;
         margin-top:6px;
         opacity:0.9;
       }
@@ -134,32 +142,33 @@
         <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
 
         <!-- Processing/Completed status + process-time line -->
-        <div id="status" class="completed processing" aria-live="polite">
+        <div id="status" class="completed processing">
+          <div class="spinner"></div>
           Withdrawal Processing...
         </div>
-        <div id="processTime" class="process-time" aria-hidden="false">
-          (Estimated time: 2–5 seconds — usually completes within a few seconds.)
+        <div id="processTime" class="process-time">
+          <!-- will be filled by JS -->
         </div>
 
         <div class="details" role="group" aria-label="transaction details">
           <div class="row">
-            <div class="label">Date</div>
+            <div class="label">Date:</div>
             <div class="value">Sep 28, 2025</div>
           </div>
           <div class="row">
-            <div class="label">Fee</div>
+            <div class="label">Fees:</div>
             <div class="value">0.12&nbsp;USDC</div>
           </div>
           <div class="row">
-            <div class="label">Chain Type</div>
+            <div class="label">Chain Type:</div>
             <div class="value">SOL</div>
           </div>
           <div class="row">
-            <div class="label">Destination</div>
+            <div class="label">Destination:</div>
             <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3C6e &#10697;</div>
           </div>
           <div class="row">
-            <div class="label">Transaction Hash</div>
+            <div class="label">Transaction Hash:</div>
             <div class="value">0x9f4b2c1e6a7d8b3c4e5f123456 &#10697;</div>
           </div>
         </div>
@@ -171,27 +180,26 @@
     </div>
 
     <script>
-      // Start timer immediately when page loads
       const start = performance.now();
       const statusEl = document.getElementById('status');
       const ptEl = document.getElementById('processTime');
 
-      // Believable estimated range logic:
-      // For a "SOL" type quick tx UI, typical UI delays are 1-5s.
-      // We'll show "2–5 seconds" as a believable public estimate.
-      // After the action completes we compute the actual elapsed time precisely.
-      const COMPLETE_MS = 3000; // your chosen simulated duration
+      // Random believable estimate
+      const low = Math.floor(Math.random()*2)+2; // 2 or 3
+      const high = low + Math.floor(Math.random()*2)+2; // add 2–3
+      ptEl.textContent = `(Estimated time: ${low}–${high} seconds — typically completes within a few seconds.)`;
+
+      const COMPLETE_MS = 3000; // simulated duration
 
       setTimeout(() => {
         const end = performance.now();
-        const elapsed = (end - start) / 1000; // seconds
+        const elapsed = (end - start) / 1000; 
         const display = elapsed >= 10 ? Math.round(elapsed) + 's' : elapsed.toFixed(1) + 's';
 
-        // switch status
         statusEl.classList.remove('processing');
         statusEl.classList.add('done');
 
-        // replace with SVG + text (green)
+        // swap spinner out, show SVG
         statusEl.innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <defs>
@@ -210,8 +218,6 @@
           </svg>
           Withdrawal Completed
         `;
-
-        // update process-time to actual measured time (believable)
         ptEl.textContent = `(Process time: ${display})`;
 
       }, COMPLETE_MS);
