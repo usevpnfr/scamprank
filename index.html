@@ -1,149 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
     <title>SECURITY ALERT</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <style>
-      body {
-        background-color: #000;
-        color: red;
-        font-family: monospace;
-        text-align: center;
-        padding: 80px;
-        margin: 0;
+      :root{
+        --bg:#000;
+        --red:#ff2d2d;
+        --green:#27c93f;
+        --white:#fff;
+        --muted:#bfbfbf;
+        --value:#9aa0a6;          /* gray for values */
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       }
 
-      .title {
-        font-size: 60px;
-        font-weight: bold;
-        margin-bottom: 30px;
+      /* Page */
+      html,body{height:100%}
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--white);
+        font-family: var(--mono);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
-      .message {
-        font-size: 40px;
-        text-align: center;
-        color: white;
-        margin-bottom: 18px;
+      /* Centered narrow column – good on iPhone */
+      .wrap{
+        min-height:100%;
+        box-sizing:border-box;
+        padding: 24px 16px calc(28px + env(safe-area-inset-bottom));
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+      }
+      .card{
+        width:100%;
+        max-width:520px;                 /* keeps everything readable */
+        text-align:center;
       }
 
-      .completed {
-        font-size: 40px;
-        text-align: center;
-        color: green;
-        margin-bottom: 18px;
+      /* Headline stack */
+      .title{
+        color:var(--red);
+        font-weight:800;
+        font-size:32px;                  /* mobile size */
+        line-height:1.1;
+        letter-spacing:0.04em;
+        margin: 8px 0 10px;
+        text-transform:uppercase;
+      }
+      .warn{font-size:24px; margin:10px 0 18px}
+
+      .message{
+        color:var(--white);
+        font-size:18px;
+        line-height:1.3;
+        margin: 8px 0 14px;
+      }
+      .completed{
+        color:var(--green);
+        font-size:18px;
+        font-weight:700;
+        margin: 8px 0 10px;
       }
 
-      /* details box: labels on left, values on right */
-      .details {
-        display: inline-block;
-        text-align: left;
-        margin-top: 12px;
-        margin-bottom: 24px;
-        min-width: 560px;           /* keeps layout stable on desktop */
-        max-width: 90vw;            /* responsive on small screens */
-        padding: 18px 22px;
-        border-radius: 8px;
+      /* Details grid: labels left, values right */
+      .details{
+        margin: 18px auto 0;
+        text-align:left;
+        border-top: 1px solid rgba(255,255,255,.06);
+        padding-top: 14px;
+      }
+      .row{
+        display:grid;
+        grid-template-columns: 1fr auto;      /* label grows, value hugs right */
+        gap: 12px;
+        align-items:baseline;
+        padding: 8px 0;
+      }
+      .label{
+        color:var(--muted);
+        font-size:14px;
+        white-space:nowrap;
+      }
+      .value{
+        color:var(--value);
+        font-size:14px;
+        text-align:right;
+        word-break: break-all;                 /* wrap long hashes/addresses */
       }
 
-      .row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 0;
-        border-bottom: none;
+      /* Tiny fine print way below fold on phones */
+      .disclaimer{
+        font-size:12px;
+        color:#999;
+        text-align:center;
+        line-height:1.4;
+        margin-top: 56vh;                      /* pushes below initial viewport */
+        padding: 0 8px;
       }
 
-      .label {
-        flex: 0 0 45%;
-        text-align: left;
-        font-size: 20px;
-        color: #bfbfbf;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .value {
-        flex: 1 1 55%;
-        text-align: right;
-        font-size: 20px;
-        color: gray;
-        word-break: break-all;
-      }
-
-      .ids {
-        font-size: 40px;
-        text-align: center;
-        color: gray;
-      }
-
-      a {
-        color: #00f;
-        display: block;
-        margin-top: 30px;
-      }
-
-      /* small-print disclaimer that sits far below the fold */
-      .disclaimer {
-        font-size: 12px;
-        color: #999;
-        margin-top: 1000px; /* pushes it below the fold on most phones */
-        text-align: center;
-        line-height: 1.4;
-        padding: 10px 20px;
-      }
-
-      /* Responsive tweaks */
-      @media (max-width: 640px) {
-        .title { font-size: 34px; padding: 0 20px; }
-        .message, .completed { font-size: 20px; padding: 0 20px; }
-        .details { min-width: auto; width: 100%; padding: 12px 16px; }
-        .label { font-size: 14px; flex: 0 0 48%; }
-        .value { font-size: 14px; flex: 1 1 52%; text-align: right; }
-        .ids { font-size: 16px; }
-        .disclaimer { margin-top: 600px; font-size: 11px; padding: 8px; }
+      /* Larger screens get bigger type automatically */
+      @media (min-width: 768px){
+        .title{font-size:54px}
+        .warn{font-size:28px}
+        .message{font-size:26px}
+        .completed{font-size:26px}
+        .label,.value{font-size:16px}
+        .disclaimer{margin-top: 420px}
       }
     </style>
   </head>
   <body>
-    <div class="title">⚠️ YOUR CRYPTO WALLET HAS BEEN DRAINED! ⚠️</div>
+    <div class="wrap">
+      <div class="card">
+        <div class="warn">⚠️</div>
+        <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
+        <div class="warn">⚠️</div>
 
-    <div class="message">Withdrawal Request Processing...</div>
+        <div class="message">Withdrawal<br/>Request<br/>Processing...</div>
 
-    <div class="completed">✅ Withdrawal Completed [Finalized]</div>
+        <div class="completed">✅ Withdrawal Completed [Finalized]</div>
 
-    <!-- Details area: labels left, values right -->
-    <div class="details" role="group" aria-label="transaction details">
-      <div class="row">
-        <div class="label">Date:</div>
-        <div class="value">Sep 28, 2025</div>
+        <!-- Details: labels left / values right -->
+        <div class="details" role="group" aria-label="transaction details">
+          <div class="row">
+            <div class="label">Date:</div>
+            <div class="value">Sep 28, 2025</div>
+          </div>
+          <div class="row">
+            <div class="label">Fees:</div>
+            <div class="value">0.12&nbsp;USDC</div>
+          </div>
+          <div class="row">
+            <div class="label">Chain Type:</div>
+            <div class="value">SOL</div>
+          </div>
+          <div class="row">
+            <div class="label">Destination:</div>
+            <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3C6e9D</div>
+          </div>
+          <div class="row">
+            <div class="label">Transaction Hash:</div>
+            <div class="value">0x9f4b2c1e6a7d8b3c4e5f1234567890a</div>
+          </div>
+        </div>
+
+        <!-- fine-print, appears only after scrolling on phones -->
+        <div class="disclaimer">
+          This page is a simulated demonstration created for entertainment and promotional purposes only and does not represent a real security threat.
+        </div>
       </div>
-
-      <div class="row">
-        <div class="label">Fees:</div>
-        <div class="value">0.12 USDC</div>
-      </div>
-
-      <div class="row">
-        <div class="label">Chain Type:</div>
-        <div class="value">SOL</div>
-      </div>
-
-      <div class="row" style="padding-top:12px; padding-bottom:8px;">
-        <div class="label">Destination:</div>
-        <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3C6e9D</div>
-      </div>
-
-      <div class="row">
-        <div class="label">Transaction Hash:</div>
-        <div class="value">0x9f4b2c1e6a7d8b3c4e5f1234567890a</div>
-      </div>
-    </div>
-
-    <!-- small-print disclaimer placed near the end -->
-    <div class="disclaimer">
-      This page is a simulated demonstration created for entertainment and promotional purposes only,
-      and does not represent a real security threat.
     </div>
   </body>
 </html>
