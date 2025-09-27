@@ -14,55 +14,74 @@
         --white:#fff;
         --muted:#9aa0a6;
         --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+
+        /* spacing + overlay widths for the copyable rows */
+        --label-gap: 16px;   /* fixed distance after label where the ID starts */
+        --fade-width: 34px;  /* how much of the value is faded under the copy cell */
+        --copy-col: 22px;    /* width of the copy icon column */
       }
 
       html,body{height:100%}
-      body{
-        margin:0; background:var(--bg); color:var(--white); font-family:var(--font);
-      }
+      body{margin:0;background:var(--bg);color:var(--white);font-family:var(--font)}
 
-      .wrap{min-height:100%; box-sizing:border-box; padding:24px 16px calc(28px + env(safe-area-inset-bottom));
-        display:flex; align-items:flex-start; justify-content:center;}
-      .card{width:100%; max-width:520px; text-align:center;}
+      .wrap{min-height:100%;box-sizing:border-box;padding:24px 16px calc(28px + env(safe-area-inset-bottom));display:flex;align-items:flex-start;justify-content:center}
+      .card{width:100%;max-width:520px;text-align:center}
 
-      .attention{color:var(--red); font-weight:800; font-size:28px; margin:2px 0 8px; text-transform:uppercase;}
-      .title{color:var(--red); font-weight:800; font-size:32px; line-height:1.1; margin:6px 0 8px; text-transform:uppercase;}
+      .attention{color:var(--red);font-weight:800;font-size:28px;margin:2px 0 8px;text-transform:uppercase}
+      .title{color:var(--red);font-weight:800;font-size:32px;line-height:1.1;margin:6px 0 8px;text-transform:uppercase}
 
-      .completed{font-size:16px; margin:12px 0 6px; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:400; transition:color .3s ease, opacity .3s ease;}
-      .completed.processing{color:var(--yellow);} .completed.done{color:var(--green);}
+      .completed{font-size:16px;margin:12px 0 6px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:400;transition:color .3s ease,opacity .3s ease}
+      .completed.processing{color:var(--yellow)}
+      .completed.done{color:var(--green)}
 
-      /* Spinner same visual size as the check SVG */
-      .spinner{width:22px; height:22px; box-sizing:border-box; border:2px solid var(--yellow); border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;}
+      /* spinner matches checkmark box size */
+      .spinner{width:22px;height:22px;box-sizing:border-box;border:2px solid var(--yellow);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
       @keyframes spin{to{transform:rotate(360deg)}}
 
-      .process-time{font-size:14px; color:var(--muted); font-weight:300; margin-top:6px; opacity:.9;}
+      .process-time{font-size:14px;color:var(--muted);font-weight:300;margin-top:6px;opacity:.9}
 
-      .details{margin:16px auto 0; text-align:left; border-top:1px solid rgba(255,255,255,.06); padding-top:12px;}
+      .details{margin:16px auto 0;text-align:left;border-top:1px solid rgba(255,255,255,.06);padding-top:12px}
 
-      /* Default rows (untouched layout): label left, value right */
-      .row{display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:baseline; padding:8px 0;}
-      .label{color:var(--muted); font-size:14px; white-space:nowrap;}
-      .value{color:var(--white); font-size:14px; text-align:right; word-break:break-all;}
+      /* default rows untouched: label left, value right */
+      .row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:baseline;padding:8px 0}
+      .label{color:var(--muted);font-size:14px;white-space:nowrap}
+      .value{color:var(--white);font-size:14px;text-align:right;word-break:break-all}
 
-      /* Special rows ONLY for Destination & Transaction Hash */
-      .row.copyable{grid-template-columns: 120px 1fr 22px; align-items:center;}
-      .row.copyable .label{text-align:left;}
-      .row.copyable .value{
-        text-align:left;           /* value starts right after fixed label width */
-        overflow:hidden; white-space:nowrap; text-overflow:ellipsis; position:relative;
+      /* ONLY for the two ID rows */
+      .row.copyable{
+        grid-template-columns: auto var(--label-gap) 1fr var(--copy-col);
+        align-items:center;
       }
-      .row.copyable .value::after{
-        content:""; position:absolute; right:0; top:0; bottom:0; width:32px;
-        background:linear-gradient(to right, transparent, var(--bg));
+      .row.copyable .label{ text-align:left }
+      .row.copyable .value{
+        text-align:left; white-space:nowrap; overflow:hidden; text-overflow:clip; position:relative;
+        padding-right: calc(var(--fade-width)); /* keep text clear of the overlay */
+      }
+      /* the fade+… is anchored to the copy cell, not the value */
+      .row.copyable .copy{
+        position:relative; width:var(--copy-col); text-align:right; color:var(--muted); font-size:14px;
+      }
+      .row.copyable .copy::before{
+        content:"";
+        position:absolute; left: calc(-1 * var(--fade-width)); top:0; bottom:0; width: var(--fade-width);
+        background: linear-gradient(to right, rgba(0,0,0,0), var(--bg) 70%, var(--bg));
         pointer-events:none;
       }
-      .row.copyable .copy{font-size:14px; color:var(--muted); text-align:right;}
+      .row.copyable .copy::after{
+        content:"…";
+        position:absolute; left: calc(-1 * (var(--fade-width) - 16px)); top:50%; transform:translateY(-50%);
+        color: rgba(255,255,255,.75); font-size:14px; line-height:1; pointer-events:none;
+      }
 
-      .disclaimer{font-size:12px; color:#999; text-align:center; line-height:1.4; margin-top:56vh; padding:0 8px;}
+      .disclaimer{font-size:12px;color:#999;text-align:center;line-height:1.4;margin-top:56vh;padding:0 8px}
 
       @media (min-width:768px){
-        .attention{font-size:40px} .title{font-size:54px} .completed{font-size:20px}
-        .label,.value,.row.copyable .copy{font-size:16px} .process-time{font-size:16px}
+        .attention{font-size:40px}
+        .title{font-size:54px}
+        .completed{font-size:20px}
+        .label,.value{font-size:16px}
+        .row.copyable .copy{font-size:16px}
+        .process-time{font-size:16px}
         .disclaimer{margin-top:420px}
       }
     </style>
@@ -94,7 +113,7 @@
             <div class="value">SOL</div>
           </div>
 
-          <!-- ONLY these two rows use the special copyable layout -->
+          <!-- special layout ONLY here -->
           <div class="row copyable">
             <div class="label">Destination:</div>
             <div id="destVal" class="value"></div>
@@ -118,24 +137,22 @@
       const statusEl = document.getElementById('status');
       const ptEl = document.getElementById('processTime');
 
-      // Current local time/date
+      // current local time
       document.getElementById('timeVal').textContent = new Date().toLocaleString();
 
-      // Robust random hex generator
+      // strong random hex
       function randomHex(len){
         const bytes = new Uint8Array(len/2);
         if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
         else for (let i=0;i<bytes.length;i++) bytes[i] = Math.floor(Math.random()*256);
         return Array.from(bytes, b => b.toString(16).padStart(2,'0')).join('');
       }
-
-      // Fill randomized IDs
       document.getElementById('destVal').textContent = "0x" + randomHex(40); // 20 bytes
       document.getElementById('hashVal').textContent = "0x" + randomHex(64); // 32 bytes
 
-      // Believable estimate
-      const low = Math.floor(Math.random()*2)+2;   // 2–3
-      const high = low + Math.floor(Math.random()*2)+2; // +2–3
+      // believable estimate
+      const low = Math.floor(Math.random()*2)+2;          // 2–3
+      const high = low + (Math.floor(Math.random()*2)+2); // +2–3
       ptEl.textContent = `(Estimated time: ${low}–${high} seconds — typically completes within a few seconds.)`;
 
       const COMPLETE_MS = 3000;
