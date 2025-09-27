@@ -65,17 +65,14 @@
         font-weight:400;
         transition:color .3s ease, opacity .3s ease;
       }
-      .completed.processing{
-        color:var(--yellow);
-      }
-      .completed.done{
-        color:var(--green);
-      }
+      .completed.processing{ color:var(--yellow); }
+      .completed.done{ color:var(--green); }
 
-      /* Spinner */
+      /* Spinner fixed to same size as checkmark */
       .spinner {
-        width:16px;
-        height:16px;
+        width:22px;
+        height:22px;
+        box-sizing:border-box;
         border:2px solid var(--yellow);
         border-top-color:transparent;
         border-radius:50%;
@@ -97,22 +94,41 @@
         border-top: 1px solid rgba(255,255,255,.06);
         padding-top: 12px;
       }
+
       .row{
         display:grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items:baseline;
+        grid-template-columns: 90px 1fr 22px; /* label, value, copy icon */
+        gap: 8px;
+        align-items:center;
         padding: 8px 0;
       }
       .label{
         color:var(--muted);
         font-size:14px;
+        white-space:nowrap;
       }
       .value{
         color:var(--white);
         font-size:14px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        position:relative;
+      }
+      /* Fade effect for overflow values */
+      .value::after {
+        content:"";
+        position:absolute;
+        right:0;
+        top:0;
+        bottom:0;
+        width:30px;
+        background:linear-gradient(to right, transparent, var(--bg));
+      }
+      .copy{
+        font-size:14px;
+        color:var(--muted);
         text-align:right;
-        word-break: break-all;
       }
 
       .disclaimer{
@@ -128,7 +144,7 @@
         .attention{font-size:40px}
         .title{font-size:54px}
         .completed{font-size:20px}
-        .label,.value{font-size:16px}
+        .label,.value,.copy{font-size:16px}
         .process-time{font-size:16px}
         .disclaimer{margin-top:420px}
       }
@@ -141,35 +157,37 @@
 
         <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
 
-        <!-- Processing/Completed status + process-time line -->
         <div id="status" class="completed processing">
           <div class="spinner"></div>
           Withdrawal Processing...
         </div>
-        <div id="processTime" class="process-time">
-          <!-- will be filled by JS -->
-        </div>
+        <div id="processTime" class="process-time"></div>
 
-        <div class="details" role="group" aria-label="transaction details">
+        <div class="details">
           <div class="row">
-            <div class="label">Date:</div>
-            <div class="value">Sep 28, 2025</div>
+            <div class="label">Time:</div>
+            <div id="timeVal" class="value"></div>
+            <div class="copy">&#10697;</div>
           </div>
           <div class="row">
             <div class="label">Fees:</div>
             <div class="value">0.12&nbsp;USDC</div>
+            <div class="copy">&#10697;</div>
           </div>
           <div class="row">
             <div class="label">Chain Type:</div>
             <div class="value">SOL</div>
+            <div class="copy">&#10697;</div>
           </div>
           <div class="row">
             <div class="label">Destination:</div>
-            <div class="value">0xFa3E2b7C1a9d5B6E4cD8f2A1b3C6e &#10697;</div>
+            <div id="destVal" class="value"></div>
+            <div class="copy">&#10697;</div>
           </div>
           <div class="row">
             <div class="label">Transaction Hash:</div>
-            <div class="value">0x9f4b2c1e6a7d8b3c4e5f123456 &#10697;</div>
+            <div id="hashVal" class="value"></div>
+            <div class="copy">&#10697;</div>
           </div>
         </div>
 
@@ -184,24 +202,41 @@
       const statusEl = document.getElementById('status');
       const ptEl = document.getElementById('processTime');
 
-      // Random believable estimate
-      const low = Math.floor(Math.random()*2)+2; // 2 or 3
-      const high = low + Math.floor(Math.random()*2)+2; // add 2–3
+      // Set current time/date
+      const now = new Date();
+      document.getElementById('timeVal').textContent = now.toLocaleString();
+
+      // Random hex generator
+      function randomHex(len){
+        const arr = new Uint8Array(len/2);
+        if(window.crypto && crypto.getRandomValues){
+          crypto.getRandomValues(arr);
+        } else {
+          for(let i=0;i<arr.length;i++) arr[i]=Math.floor(Math.random()*256);
+        }
+        return Array.from(arr).map(b=>b.toString(16).padStart(2,"0")).join("");
+      }
+
+      // Random destination & tx hash
+      document.getElementById('destVal').textContent = "0x"+randomHex(40);
+      document.getElementById('hashVal').textContent = "0x"+randomHex(64);
+
+      // Random believable ETA
+      const low = Math.floor(Math.random()*2)+2; // 2–3
+      const high = low + Math.floor(Math.random()*2)+2; // +2–3
       ptEl.textContent = `(Estimated time: ${low}–${high} seconds — typically completes within a few seconds.)`;
 
-      const COMPLETE_MS = 3000; // simulated duration
+      const COMPLETE_MS = 3000;
 
       setTimeout(() => {
         const end = performance.now();
-        const elapsed = (end - start) / 1000; 
-        const display = elapsed >= 10 ? Math.round(elapsed) + 's' : elapsed.toFixed(1) + 's';
+        const elapsed = (end - start) / 1000;
+        const display = elapsed >= 10 ? Math.round(elapsed)+"s" : elapsed.toFixed(1)+"s";
 
         statusEl.classList.remove('processing');
         statusEl.classList.add('done');
-
-        // swap spinner out, show SVG
         statusEl.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
             <defs>
               <linearGradient id="fillGradient" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stop-color="#0FFF67" stop-opacity="0.25"/>
@@ -209,17 +244,13 @@
               </linearGradient>
             </defs>
             <circle cx="12" cy="12" r="10" fill="url(#fillGradient)" stroke="#0FFF67" stroke-width="0.42"/>
-            <polyline 
-              points="7.6 11.6 11 15.4 16.4 8.6" 
-              stroke="#0FFF67" 
-              stroke-width="1.65" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"/>
+            <polyline points="7.6 11.6 11 15.4 16.4 8.6" 
+              stroke="#0FFF67" stroke-width="1.65"
+              stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           Withdrawal Completed
         `;
         ptEl.textContent = `(Process time: ${display})`;
-
       }, COMPLETE_MS);
     </script>
   </body>
