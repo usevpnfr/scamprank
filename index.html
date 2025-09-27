@@ -84,6 +84,28 @@
         color:rgba(255,255,255,.75); font-size:14px; line-height:1; pointer-events:none;
       }
 
+      /* new subtle help row */
+      .help {
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+        margin-top:10px;
+        font-size:12px;
+        color:#888;
+        gap:6px;
+      }
+      .help .icon {
+        width:16px;
+        height:16px;
+        border:1px solid #888;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:11px;
+        line-height:1;
+      }
+
       .disclaimer{font-size:12px;color:#999;text-align:center;line-height:1.4;margin-top:56vh;padding:0 8px}
 
       @media (min-width:768px){
@@ -136,6 +158,12 @@
             <div id="hashVal" class="value"></div>
             <div class="copy">&#10697;</div>
           </div>
+        </div>
+
+        <!-- help direction row -->
+        <div class="help">
+          <span class="icon">?</span>
+          <span class="text">This wasn't me.</span>
         </div>
 
         <div class="disclaimer">
