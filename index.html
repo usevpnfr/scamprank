@@ -4,15 +4,16 @@
     <meta charset="utf-8" />
     <title>SECURITY ALERT</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
       :root{
         --bg:#000;
         --red:#ff2d2d;
-        --green:#27c93f;
+        --green:#0FFF67; /* updated neon green */
         --white:#fff;
         --muted:#bfbfbf;
         --value:#9aa0a6;
-        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
 
       html,body{height:100%}
@@ -20,7 +21,7 @@
         margin:0;
         background:var(--bg);
         color:var(--white);
-        font-family: var(--mono);
+        font-family: var(--font);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
@@ -39,28 +40,25 @@
         text-align:center;
       }
 
-      /* NEW: Attention line (slightly smaller than title) */
       .attention{
         color:var(--red);
         font-weight:800;
-        font-size:28px;          /* a bit smaller than title */
+        font-size:28px;
         letter-spacing:0.04em;
         text-transform:uppercase;
         margin: 2px 0 8px;
       }
 
-      /* Headline */
       .title{
         color:var(--red);
         font-weight:800;
-        font-size:32px;          /* mobile size for iPhone */
+        font-size:32px;
         line-height:1.1;
         letter-spacing:0.04em;
         margin: 6px 0 8px;
         text-transform:uppercase;
       }
 
-      /* NEW: small warning icons row (same size as old completed line) */
       .warn{
         font-size:18px;
         margin:6px 0 14px;
@@ -73,12 +71,15 @@
         margin: 4px 0 12px;
       }
 
-      /* Smaller than before: just a bit bigger than details (14px) */
       .completed{
-        color:var(--green);
-        font-size:16px;          /* details are 14px */
+        color:var(--green); /* neon green text */
+        font-size:16px;
         font-weight:700;
-        margin: 6px 0 10px;
+        margin: 12px 0 14px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:8px;
       }
 
       .details{
@@ -129,16 +130,30 @@
   <body>
     <div class="wrap">
       <div class="card">
-        <!-- NEW attention line -->
         <div class="attention">⚠️ ATTENTION! ⚠️</div>
 
-        <!-- Title without inline emojis -->
         <div class="title">YOUR CRYPTO WALLET HAS BEEN DRAINED!</div>
 
-        <!-- Smaller completed line -->
-        <div class="completed">✅ Withdrawal Completed [Finalized]</div>
+        <!-- Completed line with custom SVG -->
+        <div class="completed">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="fillGradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#0FFF67" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#0FFF67" stop-opacity="0.05"/>
+              </linearGradient>
+            </defs>
+            <circle cx="12" cy="12" r="10" fill="url(#fillGradient)" stroke="#0FFF67" stroke-width="0.42"/>
+            <polyline 
+              points="7.6 11.6 11 15.4 16.4 8.6" 
+              stroke="#0FFF67" 
+              stroke-width="1.65" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"/>
+          </svg>
+          Withdrawal Completed
+        </div>
 
-        <!-- Details: labels left / values right -->
         <div class="details" role="group" aria-label="transaction details">
           <div class="row">
             <div class="label">Date:</div>
